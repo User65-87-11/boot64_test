@@ -1,0 +1,10 @@
+ressources
+.ninja_log
+build.ninja
+old.Makefile
+build
+boot
+.todo
+.test
+kernel
+libc

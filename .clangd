@@ -1,0 +1,31 @@
+CompileFlags:
+  Add:
+    - "-xc"
+    - "-Wall"
+    - "-std=c23"
+    - "-Wno-unused-includes"
+    - "-Wno-format"
+    - "-Wno-incompatible-pointer-types"
+    - "-Wno-pointer-to-int-cast"    
+    - "-Wno-int-to-pointer-cast"    
+
+    - "-DSTRINGS_IMPLEMENTATION"
+    - "-DDRIVERS_SCREEN_IMPLEMENTATION" 
+    - "-DPRINT_REGS_IMPLEMENTATION" 
+    - "-DDETECT_MEMORY_IMPLEMENTATION"
+    - "-DARRAYS_IMPLEMENTATION" 
+    - "-DMEMORY_IMPLEMENTATION" 
+    
+    
+    
+    
+    
+
+	
+
+
+  Remove: [-W*]                     # strip all other warning-related flags
+  Compiler: clang++               # Change argv[0] of compile flags to `clang++`
+
+Diagnostics:
+  Suppress: pp_file_not_found
