@@ -22,39 +22,50 @@ disk_geom:
 ; CF = Set if error; otherwise cleared
 	pusha
 	
-	mov bx,DISK_PARAMS
-	call print 
+	
+	
 
 ; rbx            0x1                 1
 ; rcx            0x5                 5
 ; rdx            0x21930180          563282304
+	mov ah,0x8
+	mov dl, [BOOT_DRIVE]
 
-	int 0x08
+	int 0x13
 	jc disk_error ; if error (stored in the carry bit)
  
 
  
-	;read cylinders with 2 bits from CL
+	;read max cylinders with 2 bits from CL 
+	; C = 0
 	mov bh, cl
 	rol bh, 2
 	mov bl, ch
 	and bx, 0x02ff
-	mov [HEX_IN], bx
 	call print_hex
 
-	; read secotrs
+	; read max secotrs per track
+	; SPT = 5
 	movzx  bx, cl
 	and bx, 0x00df
-	mov [HEX_IN],bx
 	call print_hex
 
 
-	;read heads
+	;read max heads
+	; HPC? = 0x14 = 20
 	movzx bx,dh
-	mov [HEX_IN],bx
 	call print_hex
 	call print_nl
-	 
+	; C:0 S:1F H:0f
+	; LBA = (C × HPC + H) × SPT + (S − 1)
+	; LSize = (1*1f*0f)
+	; C = LBA ÷ (HPC × SPT)
+	; H = (LBA ÷ SPT) mod HPC
+	; S = (LBA mod SPT) + 1
+	; LBA = (512*20)   
+	;	C = (512*20) / (20*5) = 102.4 = 102
+	;	H = ((512*20) / 5) mod 20 =  2048 mod 20 = 8
+	;	S = ((512*20) mod 5) + 1 = 10240 mod 5  + 1 = 1
 	popa
 	ret
 disk_load:
@@ -78,7 +89,7 @@ disk_load:
 	; 	jmp $	
 		
 		mov dh, 0x00 ; dh <- head number (0x0 .. 0xF)
-		push SECOND_STAGE_DATA_SEG
+		push SECOND_PART_DATA_SEG
 		pop es
 		mov bx, 0x0000
 		; [es:bx] <- pointer to buffer where the data will be stored
@@ -99,8 +110,7 @@ disk_error:
 		call print
 		; call print_nl
 		mov dh, ah ; ah = error code, dl = disk drive that dropped the error
-		mov [HEX_IN],DH
-		mov [HEX_IN+1],BYTE 0
+		movzx bx,DH
 		call print_hex ; check out the code at http://stanislavs.org/helppc/int_13-1.html
 		call print_nl
 		jmp disk_loop
@@ -110,7 +120,9 @@ sectors_error:
 		call print
 
 disk_loop:
-		jmp $
+	.idle_loop:
+    hlt         ; halt CPU until the next interrupt
+    jmp .idle_loop
 
 DISK_ERROR: db "Disk read error", 0x0A, 0x0D,0
 SECTORS_ERROR: db "Incorrect number of sectors read",0x0A, 0x0D, 0

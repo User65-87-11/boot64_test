@@ -1,10 +1,11 @@
-ressources
+resources
 .ninja_log
 build.ninja
 old.Makefile
 build
+out
 boot
 .todo
 .test
-kernel
-libc
+kernel2
+libc2

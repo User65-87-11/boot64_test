@@ -33,7 +33,7 @@ SwitchToLongMode:
 
 		;int(0x1000) = 4096 bytes;
 
-		; assumed 4th table somewhere at 0x1000
+	
 
 		; Build the Page Map Level 4.
 		; es:di points to the Page Map Level 4 table. (PML4T)

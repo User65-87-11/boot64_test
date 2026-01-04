@@ -4,7 +4,7 @@ print_hex:
 		pusha
 
 		mov cx, 0 ; our index variable
-		mov dx,[HEX_IN] 
+		mov dx,bx
 	; Strategy: get the last char of '[HEX_IN]', then convert to ASCII
 	; Numeric ASCII values: '0' (ASCII 0x30) to '9' (0x39), so just add 0x30 to byte N.
 	; For alphabetic characters A-F: 'A' (ASCII 0x41) to 'F' (0x46) we'll add 0x40
@@ -46,4 +46,4 @@ print_hex:
 
 HEX_OUT:
     db '0x0000 ',0 ; reserve memory for our new string
-HEX_IN: dw 0
+ 
